@@ -18,6 +18,8 @@ describe Measurement do
     its(:location) { is_expected.to contain_exactly(have_attributes(value: 10), have_attributes(value: 5)) }
     its(:temperature) { is_expected.to have_attributes(value: 20) }
     its(:country) { is_expected.to have_attributes(code: "AU") }
+    its(:as_recording) { is_expected.to eq("2010-01-01T00:00|10.0000,5.0000|20.0000|AU") }
+    its(:to_s) { is_expected.to eq("2010-01-01T00:00|10.0000,5.0000|20.0000|AU") }
   end
 
   describe '#distance_between' do
@@ -73,5 +75,14 @@ describe Measurement do
       )
     }
     its(:temperature) { is_expected.to have_attributes(value: be_within(0.01).of(68)) }
+  end
+
+  describe '#from_recording' do
+    subject { described_class.from_recording("2010-01-01T00:00|10.0000,5.0000|20.0000|AU") }
+    it { is_expected.to be_a Measurement }
+    its('time.iso8601') { is_expected.to eq("2010-01-01T00:00:00+00:00") }
+    its(:location) { is_expected.to contain_exactly(have_attributes(value: 10), have_attributes(value: 5)) }
+    its(:temperature) { is_expected.to have_attributes(value: 20) }
+    its(:country) { is_expected.to have_attributes(code: "AU") }
   end
 end

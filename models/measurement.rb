@@ -15,6 +15,19 @@ class Measurement
   # @return [Country] the country the measurement was taken in.
   attr_reader :country
 
+  # @param [String] data_line the line received from baloon.
+  # @return [Measurement] after parsing data.
+  def self.from_recording(data_line)
+    data = data_line.tr("\n","").split("|")
+    country = Country.get(data[3])
+    Measurement.new(
+      DateTime.strptime(data[0], "%Y-%m-%dT%H:%M"),
+      data[1].split(",").map { |v| country.new_distance_unit(v.to_f) },
+      country.new_temperature_unit(data[2].to_f),
+      country
+    )
+  end
+
   # @param [DateTime] time the tie of the measurement.
   # @param [Array<Unit>] location the location of the measurement in pairs.
   # @param [Unit] temperature the temperature of the measurement.
@@ -41,10 +54,39 @@ class Measurement
      )
   end
 
+  # @return [String] the measurement as stored/recieved.
+  def as_recording
+    [
+      @time.strftime("%Y-%m-%dT%H:%M"), @location.map { |co_ord| "%.4f" % co_ord.value }.join(","),
+      "%.4f" % @temperature.value, @country.code
+    ].join("|")
+  end
+
+  # @return [String] a string representation of measurement.
+  def to_s
+    as_recording
+  end
+
   # Represents a country
   class Country
     # @param [String] the code for the country
     attr_reader :code
+
+    # @param [String] country that we want to get.
+    # @return [Country] constructed based on known country configuration.
+    def self.get(country)
+      @@known_countries ||= {
+        "AU" => Country.new("AU", "Celcius", "Kilometers"),
+        "US" => Country.new("US", "Fahrenheit", "Miles"),
+        "FR" => Country.new("FR", "Kelvin", "Meters"),
+      }
+
+      if @@known_countries.has_key?(country)
+        @@known_countries[country]
+      else
+        Country.new(country, "Kelvin", "Kilometers")
+      end
+    end
 
     # @param [String] code the code for the country.
     # @param [String] temperature_units the units used for temperature (eg: Celcius, Farenheit, Kelvin)
@@ -55,6 +97,32 @@ class Measurement
       @temperature_units = temperature_units
       raise("temperature unit #{temperature_units} is unknown") if !["Celcius", "Fahrenheit", "Kelvin"].include?(@temperature_units)
       raise("distance unit #{distance_units} is unknown") if !["Kilometers", "Miles", "Meters"].include?(@distance_units)
+    end
+
+    # @param [Float] distance as recieved
+    # @return [Unit] the value of the distance in this country's units.
+    def new_distance_unit(distance)
+      case @distance_units
+      when "Kilometers"
+        Unit::Kilometers.new(distance)
+      when "Miles"
+        Unit::Miles.new(distance)
+      when "Meters"
+        Unit::Meters.new(distance)
+      end
+    end
+
+    # @param [Float] distance as recieved
+    # @return [Unit] the value of the distance in this country's units.
+    def new_temperature_unit(temperature)
+      case @temperature_units
+      when "Celcius"
+        Unit::Celcius.new(temperature)
+      when "Farenheit"
+        Unit::Farenheit.new(temperature)
+      when "Kelvin"
+        Unit::Kelvin.new(temperature)
+      end
     end
 
     # @param [Unit] distance an unit measurement for distance.
