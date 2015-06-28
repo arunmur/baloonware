@@ -7,7 +7,7 @@ describe Unit::Fahrenheit do
   describe '#new' do
     subject { unit }
     its(:value) { is_expected.to eq(14) }
-    its(:to_s) { is_expected.to eq("14F") }
+    its(:to_s) { is_expected.to eq("14.0 F") }
   end
 
   describe '#to_fahrenheit' do
@@ -20,5 +20,11 @@ describe Unit::Fahrenheit do
     subject { unit.to_celcius }
     it { is_expected.to be_a Unit::Celcius }
     its(:value) { is_expected.to eq(-10) }
+  end
+
+  describe '#to_kelvin' do
+    subject { unit.to_kelvin }
+    it { is_expected.to be_a Unit::Kelvin }
+    its(:value) { is_expected.to eq(263.15) }
   end
 end

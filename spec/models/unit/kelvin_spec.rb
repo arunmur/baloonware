@@ -1,12 +1,13 @@
 require './models/unit'
 require 'rspec/its'
 
-describe Unit::Celcius do
-  let(:unit) { described_class.new(10) }
+describe Unit::Kelvin do
+  let(:unit) { described_class.new(283.15) }
+
   describe '#new' do
     subject { unit }
-    its(:value) { is_expected.to eq(10) }
-    its(:to_s) { is_expected.to eq("10.0 C") }
+    its(:value) { is_expected.to eq(283.15) }
+    its(:to_s) { is_expected.to eq("283.15 K") }
   end
 
   describe '#to_fahrenheit' do
