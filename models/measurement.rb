@@ -118,8 +118,8 @@ class Measurement
       case @temperature_units
       when "Celcius"
         Unit::Celcius.new(temperature)
-      when "Farenheit"
-        Unit::Farenheit.new(temperature)
+      when "Fahrenheit"
+        Unit::Fahrenheit.new(temperature)
       when "Kelvin"
         Unit::Kelvin.new(temperature)
       end
