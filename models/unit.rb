@@ -98,4 +98,101 @@ module Unit
       "#{value} K"
     end
   end
+
+  # Represents the Kilometer distance measurement. Can be used to convert to other distance measurements.
+  # @see Meters
+  # @see Miles
+  class Kilometers
+    # @return [Float] the value of the measurement.
+    attr_reader :value
+
+    # @param [String] value the value of the measurment.
+    def initialize(value)
+      @value = value.to_f
+    end
+
+    # @return [Kilometers] the object after converting to kilometers.
+    def to_km
+      self
+    end
+
+    # @return [Meters] the object after converting to meters.
+    def to_meters
+      Meters.new(@value * 1000.0)
+    end
+
+    # @return [Miles] the object after converting to miles.
+    def to_miles
+      Miles.new(@value * 5.0/8)
+    end
+
+    def to_s
+      "#{@value} km"
+    end
+  end
+
+  # Represents the meter distance measurement. Can be used to convert to other distance measurements.
+  # @see Kilometer
+  # @see Miles
+  class Meters
+    # @return [Float] the value of the measurement.
+    attr_reader :value
+
+    # @param [String] value the value of the measurment.
+    def initialize(value)
+      @value = value.to_f
+    end
+
+    # @return [Kilometers] the object after converting to kilometers.
+    def to_km
+      Kilometers.new(@value / 1000.0)
+    end
+
+    # @return [Meters] the object after converting to meters.
+    def to_meters
+      self
+    end
+
+    # @return [Miles] the object after converting to miles.
+    def to_miles
+      to_km.to_miles
+    end
+
+    def to_s
+      "#{@value} m"
+    end
+  end
+
+  # Represents the Mile distance measurement. Can be used to convert to other distance measurements.
+  # @see Meters
+  # @see Kilometers
+  class Miles
+    # @return [Float] the value of the measurement.
+    attr_reader :value
+
+    # @param [String] value the value of the measurment.
+    def initialize(value)
+      @value = value.to_f
+    end
+
+    # @return [Kilometers] the object after converting to kilometers.
+    def to_km
+      Kilometers.new(@value * 8.0 / 5)
+    end
+
+    # @return [Meters] the object after converting to meters.
+    def to_meters
+      Meters.new((@value * 8.0 / 5) * 1000.0)
+    end
+
+    # @return [Miles] the object after converting to miles.
+    def to_miles
+      self
+    end
+
+    def to_s
+      "#{@value} mi"
+    end
+  end
+
 end
