@@ -7,6 +7,7 @@ describe Unit::Fahrenheit do
   describe '#new' do
     subject { unit }
     its(:value) { is_expected.to eq(14) }
+    its(:to_s) { is_expected.to eq("14F") }
   end
 
   describe '#to_fahrenheit' do

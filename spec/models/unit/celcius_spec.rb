@@ -6,6 +6,7 @@ describe Unit::Celcius do
   describe '#new' do
     subject { unit }
     its(:value) { is_expected.to eq(10) }
+    its(:to_s) { is_expected.to eq("10C") }
   end
 
   describe '#to_fahrenheit' do
