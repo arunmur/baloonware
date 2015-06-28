@@ -7,7 +7,7 @@ This was developed and tested in ruby version 2.1.2. It has .ruby-version set to
 To install rbenv, follow steps from [github/rbenv](https://github.com/sstephenson/rbenv)
 To install 2.1.2 through rbenv,
 
-  rbenv install 2.1.2
+    rbenv install 2.1.2
 
 To run the generator, please perform
 
