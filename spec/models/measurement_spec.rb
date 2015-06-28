@@ -10,13 +10,14 @@ describe Measurement do
   }
   let(:temperature) { Unit::Celcius.new(20) }
   let(:time) { DateTime.parse("2010-01-01T00:00:00") }
-  let(:measurement) { described_class.new(time, location, temperature, "AU") }
+  let(:country) { Measurement::Country.new("AU", "Celcius", "Kilometers") }
+  let(:measurement) { described_class.new(time, location, temperature, country) }
   describe '#new' do
     subject { measurement }
     its('time.iso8601') { is_expected.to eq("2010-01-01T00:00:00+00:00") }
     its(:location) { is_expected.to contain_exactly(have_attributes(value: 10), have_attributes(value: 5)) }
     its(:temperature) { is_expected.to have_attributes(value: 20) }
-    its(:country) { is_expected.to eq("AU") }
+    its(:country) { is_expected.to have_attributes(code: "AU") }
   end
 
   describe '#distance_between' do
@@ -31,7 +32,7 @@ describe Measurement do
           Unit::Kilometers.new(10),
           Unit::Kilometers.new(8)
         ]
-        described_class.new(time, location, temperature, "AU")
+        described_class.new(time, location, temperature, country)
       }
       subject { measurement.distance_between(measurement2) }
       it { is_expected.to have_attributes(value: 3) }
@@ -43,7 +44,7 @@ describe Measurement do
           Unit::Kilometers.new(12),
           Unit::Kilometers.new(5)
         ]
-        described_class.new(time, location, temperature, "AU")
+        described_class.new(time, location, temperature, country)
       }
       subject { measurement.distance_between(measurement2) }
       it { is_expected.to have_attributes(value: 2) }
@@ -55,10 +56,22 @@ describe Measurement do
           Unit::Kilometers.new(12),
           Unit::Kilometers.new(7)
         ]
-        described_class.new(time, location, temperature, "AU")
+        described_class.new(time, location, temperature, country)
       }
       subject { measurement.distance_between(measurement2) }
       it { is_expected.to have_attributes(value: be_within(0.01).of(2.828)) }
     end
+  end
+
+  describe '#for' do
+    let(:us) { Measurement::Country.new("US", "Fahrenheit", "Miles") }
+    subject { measurement.for(us) }
+    its(:location) {
+      is_expected.to contain_exactly(
+        have_attributes(value: be_within(0.01).of(6.25)),
+        have_attributes(value: be_within(0.01).of(3.125)),
+      )
+    }
+    its(:temperature) { is_expected.to have_attributes(value: be_within(0.01).of(68)) }
   end
 end
